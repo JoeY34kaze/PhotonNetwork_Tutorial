@@ -31,4 +31,7 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
+# Photon Server Configuration
+Assets/Photon Unity Networking/Resources/
+
 Changelog.txt
