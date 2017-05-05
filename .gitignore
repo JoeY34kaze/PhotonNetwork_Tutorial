@@ -33,5 +33,6 @@ sysinfo.txt
 
 # Photon Server Configuration
 Assets/Photon Unity Networking/Resources/
+Assets/Photon Unity Networking/Resources.meta
 
 Changelog.txt
