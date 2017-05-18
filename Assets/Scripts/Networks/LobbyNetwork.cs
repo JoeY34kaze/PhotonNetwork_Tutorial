@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LobbyNetwork : MonoBehaviour {
+public class LobbyNetwork : MonoBehaviour
+{
 
-	// Use this for initialization
-	private void Start ()
+    // Use this for initialization
+    private void Start()
     {
         print("Connecting to server..");
         PhotonNetwork.ConnectUsingSettings("0.0.0");
-	}
+    }
 
     private void OnConnectedToMaster()
     {
@@ -22,5 +23,8 @@ public class LobbyNetwork : MonoBehaviour {
     private void OnJoinedLobby()
     {
         print("Joined lobby.");
+
+        if (!PhotonNetwork.inRoom)
+            MainCanvasManager.Instance.LobbyCanvas.transform.SetAsLastSibling();
     }
 }
