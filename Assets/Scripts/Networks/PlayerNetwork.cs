@@ -11,8 +11,8 @@ public class PlayerNetwork : MonoBehaviour {
 
     private PlayerMovement CurrentPlayer;
 
-	// Use this for initialization
-	private void Awake ()
+    // Use this for initialization
+    private void Awake()
     {
         Instance = this;
         PhotonView = GetComponent<PhotonView>();
