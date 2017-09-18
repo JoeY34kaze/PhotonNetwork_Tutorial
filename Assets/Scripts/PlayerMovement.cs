@@ -9,9 +9,12 @@ public class PlayerMovement : Photon.MonoBehaviour
     private Vector3 TargetPosition;
     private Quaternion TargetRotation;
     public float Health;
+    public bool UseTransformView = true;
+    private Animator m_animator;
 
     private void Awake()
     {
+        m_animator = GetComponent<Animator>();
         PhotonView = GetComponent<PhotonView>();
     }
 
@@ -26,6 +29,9 @@ public class PlayerMovement : Photon.MonoBehaviour
 
     private void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
+        if (UseTransformView)
+            return;
+
         if (stream.isWriting)
         {
             stream.SendNext(transform.position);
@@ -40,6 +46,9 @@ public class PlayerMovement : Photon.MonoBehaviour
 
     private void SmoothMove()
     {
+        if (UseTransformView)
+            return;
+
         transform.position = Vector3.Lerp(transform.position, TargetPosition, 0.25f);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, TargetRotation, 500 * Time.deltaTime);
     }
@@ -47,7 +56,7 @@ public class PlayerMovement : Photon.MonoBehaviour
 
     private void CheckInput()
     {
-        float moveSpeed = 100f;
+        float moveSpeed = 0.1f;
         float rotateSpeed = 500f;
 
         float vertical = Input.GetAxis("Vertical");
@@ -56,5 +65,16 @@ public class PlayerMovement : Photon.MonoBehaviour
         transform.position += transform.forward * (vertical * moveSpeed * Time.deltaTime);
         transform.Rotate(new Vector3(0, horizontal * rotateSpeed * Time.deltaTime, 0));
 
+        m_animator.SetFloat("Input", vertical);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            photonView.RPC("RPC_PerformTaunt", PhotonTargets.All);
     }
+
+    [PunRPC]
+    private void RPC_PerformTaunt()
+    {
+        m_animator.SetTrigger("Taunt");
+    }
+
 }
