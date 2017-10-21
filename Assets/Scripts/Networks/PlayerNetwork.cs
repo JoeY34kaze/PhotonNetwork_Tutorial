@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,8 +9,9 @@ public class PlayerNetwork : MonoBehaviour {
     public string PlayerName { get; private set; }
     private PhotonView PhotonView;
     private int PlayersInGame = 0;
-
+    private ExitGames.Client.Photon.Hashtable m_playerCustomProperties = new ExitGames.Client.Photon.Hashtable();
     private PlayerMovement CurrentPlayer;
+    private Coroutine m_pingCoroutine;
 
     // Use this for initialization
     private void Awake()
@@ -90,6 +92,29 @@ public class PlayerNetwork : MonoBehaviour {
         GameObject obj = PhotonNetwork.Instantiate(Path.Combine("Prefabs", "NewPlayer"), Vector3.up * randomValue, Quaternion.identity, 0);
         CurrentPlayer = obj.GetComponent<PlayerMovement>();
     }
+    
+    private IEnumerator C_SetPing()
+    {
+        while (PhotonNetwork.connected)
+        {
+            m_playerCustomProperties["Ping"] = PhotonNetwork.GetPing();
+            PhotonNetwork.player.SetCustomProperties(m_playerCustomProperties);
+
+            yield return new WaitForSeconds(5f);
+        }
+
+        yield break;
+    }
+
+
+    //When connected to the master server (photon).
+    private void OnConnectedToMaster()
+    {
+        if (m_pingCoroutine != null)
+            StopCoroutine(m_pingCoroutine);
+        m_pingCoroutine = StartCoroutine(C_SetPing());
+    }
+
 }
 
 
